@@ -5,6 +5,8 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
+    "npm:pack": "cd dist/powerbi-client-vue && npm pack",
+    "package": "vue-cli-service build && npm run npm:pack",
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
