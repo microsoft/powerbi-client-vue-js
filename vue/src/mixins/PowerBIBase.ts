@@ -4,7 +4,7 @@
 import { defineComponent } from 'vue';
 import { factories, service, Embed, Report, Dashboard, Tile, Qna, Visual } from 'powerbi-client';
 
-import { EventHandler, areMapsSame } from '../utils/utils';
+import { EventHandler, areMapsSame, SdkType, SdkWrapperVersion } from '../utils/utils';
 
 export enum EmbedType {
   Report = 'report',
@@ -35,6 +35,8 @@ export default defineComponent({
   data() {
     // Initialize powerbi variable for child component
     const powerbi: service.Service = this.service ? this.service : new service.Service(factories.hpmFactory, factories.wpmpFactory, factories.routerFactory);
+    powerbi.setSdkInfo(SdkType, SdkWrapperVersion);
+
     const prevEventHandlerMap: Map<string, EventHandler> = new Map([]);
     let embed!: Embed;
     return {

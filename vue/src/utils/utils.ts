@@ -3,6 +3,8 @@
 
 import { service, Embed } from 'powerbi-client';
 
+import packageInfo from '../../package.json';
+
 export type EventHandler = (event?: service.ICustomEvent<any>, embeddedEntity?: Embed) => void | null;
 
 /**
@@ -31,3 +33,7 @@ export function areMapsSame(oldMap: Map<string, EventHandler>, newMap: Map<strin
   }
   return true;
 }
+
+// SDK information to be used with service instance
+export const SdkType: string = "powerbi-client-vue-js";
+export const SdkWrapperVersion: string = packageInfo.version;
