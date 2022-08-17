@@ -33,7 +33,7 @@ describe('PowerBIVisualEmbed', () => {
 
     //Basic configuration for dashboard component
     const basicProps = {
-      embedConfig: { type: 'visual' },
+      embedConfig: configWithoutAccessToken,
       cssClassName: 'test',
     };
 
@@ -85,8 +85,10 @@ describe('PowerBIVisualEmbed', () => {
 
     const config = {
       type: 'visual',
+      id: 'fakeId',
+      visualName: 'fakeVisual',
+      pageName: 'fakePage',
     };
-
 
     beforeEach(() => {
       wrapper = mount(PowerBIVisualEmbed, {

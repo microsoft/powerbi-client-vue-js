@@ -273,7 +273,6 @@ export default {
 .header {
   background: #3476ae 0 0 no-repeat padding-box;
   border: 1px solid #707070;
-  height: 55px;
   color: #fff;
   font: 700 22px/27px 'Segoe UI';
   padding: 13px 13px 13px 36px;

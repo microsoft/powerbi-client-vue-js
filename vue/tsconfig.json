@@ -14,6 +14,6 @@
     "skipLibCheck": true,
     "types": ["vite/client", "@types/jest"],
   },
-  "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.vue", "demo/main.ts", "demo/env.d.ts"],
+  "include": ["src/**/*.ts"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

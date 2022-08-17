@@ -28,7 +28,7 @@ describe('PowerBIQnaEmbed', () => {
 
     //Basic configuration for qna component
     const basicProps = {
-      embedConfig: { type: 'qna' },
+      embedConfig: configWithoutAccessToken,
       cssClassName: 'test',
     };
 
@@ -80,6 +80,8 @@ describe('PowerBIQnaEmbed', () => {
 
     const config = {
       type: 'qna',
+      id: 'fakeId',
+      datasetIds: ['fakedatasetId']
     };
 
     beforeEach(() => {

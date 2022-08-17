@@ -31,7 +31,7 @@ describe('PowerBITileEmbed', () => {
 
     //Basic configuration for tile component
     const basicProps = {
-      embedConfig: { type: 'tile' },
+      embedConfig: configWithoutAccessToken,
       cssClassName: 'test',
     };
 
@@ -83,6 +83,8 @@ describe('PowerBITileEmbed', () => {
 
     const config = {
       type: 'tile',
+      id: 'fakeTileId',
+      dashboardId: 'fakeId',
     };
 
     beforeEach(() => {

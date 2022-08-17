@@ -35,5 +35,5 @@ export function areMapsSame(oldMap: Map<string, EventHandler>, newMap: Map<strin
 }
 
 // SDK information to be used with service instance
-export const SdkType: string = "powerbi-client-vue-js";
+export const SdkType = "powerbi-client-vue-js";
 export const SdkWrapperVersion: string = packageInfo.version;
