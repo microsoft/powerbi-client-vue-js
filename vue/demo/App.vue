@@ -139,7 +139,7 @@ export default {
     },
 
     /**
-     * Delete visual
+     * Change visual type
      *
      * @returns Promise<void>
      */
@@ -152,7 +152,7 @@ export default {
       // Get all the pages of the report
       const pages: Page[] = await this.report.getPages();
 
-      // Check if all the pages of the report deleted
+      // Check if the pages are available
       if (pages.length === 0) {
         this.displayMessage = 'No pages found.';
         return;
@@ -166,26 +166,24 @@ export default {
         return;
       }
 
-      // Get the visual
-      const visual = await activePage.getVisualByName('VisualContainer6');
-
-      // No visual found
-      if (!visual) {
-        this.displayMessage = 'No visual available';
-        console.log(this.displayMessage);
-        return;
-      }
 
       try {
         // Change the visual type using powerbi-report-authoring
         // For more information: https://docs.microsoft.com/en-us/javascript/api/overview/powerbi/report-authoring-overview
+        // Get the visual
+        const visual = await activePage.getVisualByName('VisualContainer6');
+
         const response = await visual.changeType('lineChart');
 
         this.displayMessage = `The ${visual.type} was updated to lineChart.`;
         console.log(this.displayMessage);
         return response;
       } catch (error) {
-        console.error(error);
+        if (error === 'PowerBIEntityNotFound') {
+          console.log('No Visual found with that name');
+        } else {
+          console.log(error);
+        }
       }
     },
 
