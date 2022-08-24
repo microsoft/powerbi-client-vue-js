@@ -7,7 +7,7 @@
 
     <div class="controls">
       <template v-if="isEmbedded">
-        <button @click="deleteVisual()">Delete visual</button>
+        <button @click="changeVisualType()">Change visual type</button>
         <button @click="hideFilterPane()">Hide filter pane</button>
         <button @click="setDataSelectedEvent()">Set event</button>
         <label class="display-message">{{ displayMessage }}</label>
@@ -143,9 +143,11 @@ export default {
      *
      * @returns Promise<void>
      */
-    async deleteVisual(): Promise<void> {
+    async changeVisualType(): Promise<void> {
       // Check Report is available or not
-      this.reportAvailable();
+      if(!this.reportAvailable()) {
+        return;
+      }
 
       // Get all the pages of the report
       const pages: Page[] = await this.report.getPages();
@@ -164,31 +166,22 @@ export default {
         return;
       }
 
-      // Get all visuals in the active page of the report
-      const visuals: VisualDescriptor[] = await activePage.getVisuals();
+      // Get the visual
+      const visual = await activePage.getVisualByName('VisualContainer6');
 
-      if (visuals.length === 0) {
-        this.displayMessage = 'No visuals found.';
-        console.log(this.displayMessage);
-        return;
-      }
-
-      // Get first visible visual
-      const visual: VisualDescriptor | undefined = visuals.find((v) => v?.layout?.displayState?.mode === models.VisualContainerDisplayMode.Visible);
-
-      // No visible visual found
+      // No visual found
       if (!visual) {
-        this.displayMessage = 'No visible visual available to delete.';
+        this.displayMessage = 'No visual available';
         console.log(this.displayMessage);
         return;
       }
 
       try {
-        // Delete the visual using powerbi-report-authoring
+        // Change the visual type using powerbi-report-authoring
         // For more information: https://docs.microsoft.com/en-us/javascript/api/overview/powerbi/report-authoring-overview
-        const response = await activePage.deleteVisual(visual.name);
+        const response = await visual.changeType('lineChart');
 
-        this.displayMessage = `${visual.type} visual was deleted.`;
+        this.displayMessage = `The ${visual.type} was updated to lineChart.`;
         console.log(this.displayMessage);
         return response;
       } catch (error) {
@@ -203,7 +196,9 @@ export default {
      */
     async hideFilterPane(): Promise<IHttpPostMessageResponse<void> | undefined> {
       // Check whether Report is available or not
-      this.reportAvailable();
+      if(!this.reportAvailable()) {
+        return;
+      }
 
       // New settings to hide filter pane
       const settings = {
@@ -256,8 +251,9 @@ export default {
         // Prepare status message for Error
         this.displayMessage = 'Report not available.';
         console.log(this.displayMessage);
-        return;
+        return false;
       }
+      return true;
     }
   },
 };

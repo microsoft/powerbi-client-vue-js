@@ -2,6 +2,7 @@
   "name": "powerbi-client-vue-js",
   "version": "1.0.0",
   "private": true,
+  "description": "VueJS wrapper for powerbi-client library",
   "files": [ "dist" ],
   "main": "./dist/powerbi-client-vue-js.es.ts",
   "module": "./dist/powerbi-client-vue-js.umd.ts",
@@ -11,8 +12,20 @@
     "preview": "vite preview",
     "lint": "eslint ./src --ext .ts",
     "test": "jest src",
-    "demo": "cd demo && npm run dev"
+    "demo": "cd demo && npm run dev",
+    "install:demo": "cd demo && npm install"
   },
+  "keywords": [
+		"microsoft",
+		"powerbi",
+		"embedded",
+		"vue-js"
+	],
+	"repository": {
+		"type": "git",
+		"url": ""
+	},
+	"license": "MIT",
   "dependencies": {
     "powerbi-client": "^2.21.1",
     "powerbi-report-authoring": "^1.1.3",
