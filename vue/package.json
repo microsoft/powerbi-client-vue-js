@@ -1,7 +1,6 @@
 {
   "name": "powerbi-client-vue-js",
   "version": "1.0.0",
-  "private": true,
   "description": "VueJS wrapper for powerbi-client library",
   "files": [ "dist" ],
   "main": "./dist/powerbi-client-vue-js.es.ts",
