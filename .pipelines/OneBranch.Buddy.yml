@@ -67,7 +67,7 @@ extends:
           - task: CmdLine@2
             displayName: 'Set Version'
             inputs:
-              script: '$(Build.SourcesDirectory)\.pipelines\cdpx_run_ps.cmd version.ps1'
+              script: '$(Build.SourcesDirectory)\.pipelines\onebranch_run_ps.cmd version.ps1'
               workingDirectory: '$(Build.SourcesDirectory)\vue'
 
           # Add the versioning task after running Version script
@@ -79,14 +79,14 @@ extends:
           - task: CmdLine@2
             displayName: 'NPM Install'
             inputs:
-              script: '$(Build.SourcesDirectory)\.pipelines\cdpx_run_ps.cmd restore.ps1'
+              script: '$(Build.SourcesDirectory)\.pipelines\onebranch_run_ps.cmd restore.ps1'
               workingDirectory: '$(Build.SourcesDirectory)\vue'
 
           # Commands to run during the build stage.
           - task: CmdLine@2
             displayName: 'Build'
             inputs:
-              script: '$(Build.SourcesDirectory)\.pipelines\cdpx_run_ps.cmd build.ps1'
+              script: '$(Build.SourcesDirectory)\.pipelines\onebranch_run_ps.cmd build.ps1'
               workingDirectory: '$(Build.SourcesDirectory)\vue'
 
           # Signing the files created by the build script
@@ -103,7 +103,7 @@ extends:
           - task: CmdLine@2
             displayName: 'Package'
             inputs:
-              script: '$(Build.SourcesDirectory)\.pipelines\cdpx_run_ps.cmd package.ps1'
+              script: '$(Build.SourcesDirectory)\.pipelines\onebranch_run_ps.cmd package.ps1'
               workingDirectory: '$(Build.SourcesDirectory)\vue'
 
           # Signing the files created by the packaging script
@@ -120,25 +120,25 @@ extends:
           - task: CopyFiles@2
             displayName: 'Copy Dist to Output folder'
             inputs:
-              SourceFolder: '$(Build.SourcesDirectory)\vue'
               Contents: |
                 $(Build.SourcesDirectory)\vue\dist\**
                 $(Build.SourcesDirectory)\vue\package.json
-                $(Build.SourcesDirectory)\vue\*.md
+                $(Build.SourcesDirectory)\README.md
+                $(Build.SourcesDirectory)\LICENSE.txt
               TargetFolder: '$(OUTPUTROOT)\outputs\build\build_artifacts'
 
           # Copying source artifacts to the Output folder.
           - task: CopyFiles@2
             displayName: 'Copy source to Output folder'
             inputs:
-              SourceFolder: '$(Build.SourcesDirectory)\vue'
               Contents: |
                 $(Build.SourcesDirectory)\vue\**
+                $(Build.SourcesDirectory)\*.md
+                $(Build.SourcesDirectory)\LICENSE.txt
                 !.git/**/*
                 !$(Build.SourcesDirectory)\vue\dist\**
                 !$(Build.SourcesDirectory)\vue\package-lock.json
                 !$(Build.SourcesDirectory)\vue\node_modules\**
-                !$(Build.SourcesDirectory)\vue\*.md
                 !$(Build.SourcesDirectory)\vue\*.tgz
               TargetFolder: '$(OUTPUTROOT)\outputs\build\source'
 
