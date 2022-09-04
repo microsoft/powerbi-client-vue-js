@@ -76,6 +76,10 @@ extends:
               system: 'Custom'
               customVersion: '$(CustomBuildNumber)'
 
+          - task: npmAuthenticate@0
+            inputs:
+              workingFile: 'vue/.npmrc'
+
           - task: CmdLine@2
             displayName: 'NPM Install'
             inputs:
