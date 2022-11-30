@@ -31,11 +31,11 @@
 </template>
 
 <script lang="ts">
-import { models, Report, IReportEmbedConfiguration, Page, VisualDescriptor, service, Embed } from 'powerbi-client';
+import { models, Report, IReportEmbedConfiguration, Page, service, Embed } from 'powerbi-client';
 import { IHttpPostMessageResponse } from 'http-post-message';
 import 'powerbi-report-authoring';
 
-import PowerBIReportEmbed from '../src/components/PowerBIReportEmbed';
+import { PowerBIReportEmbed } from 'powerbi-client-vue-js';
 import { reportUrl } from './public/constant';
 
 // Flag which specifies whether to use phase embedding or not
