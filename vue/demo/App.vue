@@ -26,7 +26,7 @@
       </PowerBIReportEmbed>
     </div>
 
-    <div class="footer">GitHub: <a href="#">Power BI client Vue JS Github repo link</a></div>
+    <div class="footer">GitHub: <a href="https://github.com/microsoft/powerbi-client-vue-js">https://github.com/microsoft/powerbi-client-vue-js</a></div>
   </div>
 </template>
 
