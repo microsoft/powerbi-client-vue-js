@@ -31,9 +31,9 @@
 </template>
 
 <script lang="ts">
-import 'powerbi-report-authoring';
 import { models, Report, IReportEmbedConfiguration, Page, service, Embed } from 'powerbi-client';
 import { IHttpPostMessageResponse } from 'http-post-message';
+import 'powerbi-report-authoring';
 
 import { PowerBIReportEmbed } from 'powerbi-client-vue-js';
 import { reportUrl } from './public/constant';
