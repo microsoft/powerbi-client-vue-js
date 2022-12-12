@@ -11,7 +11,7 @@ export default defineConfig({
       entry: path.resolve(__dirname, 'src/public-api.ts'),
       name: 'PowerbiClientVue',
       // the proper extensions will be added
-      fileName: (format) => `powerbi-client-vue-js.${format}.ts`
+      fileName: (format) => `powerbi-client-vue-js.${format}.js`
     },
     rollupOptions: {
       external: ['vue', 'powerbi-client'],

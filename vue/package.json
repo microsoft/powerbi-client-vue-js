@@ -3,8 +3,8 @@
   "version": "1.0.1",
   "description": "VueJS wrapper for powerbi-client library",
   "files": [ "dist" ],
-  "main": "./dist/powerbi-client-vue-js.es.ts",
-  "module": "./dist/powerbi-client-vue-js.umd.ts",
+  "main": "./dist/powerbi-client-vue-js.es.js",
+  "module": "./dist/powerbi-client-vue-js.umd.js",
   "scripts": {
     "dev": "vite",
     "build": "vue-tsc --noEmit && vite build",
