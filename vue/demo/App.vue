@@ -26,7 +26,15 @@
       </PowerBIReportEmbed>
     </div>
 
-    <div class="footer">GitHub: <a href="https://github.com/microsoft/powerbi-client-vue-js">https://github.com/microsoft/powerbi-client-vue-js</a></div>
+    <div class="footer">
+      <p>This demo is powered by Power BI Embedded Analytics</p>
+      <label class="separator-pipe">|</label>
+      <img title="Power-BI" alt="PowerBI_Icon" class="footer-icon" src="./assets/PowerBI_Icon.png">
+      <p>Explore our<a href="https://aka.ms/pbijs/" target="_blank" rel="noreferrer noopener">Playground</a></p>
+      <label class="separator-pipe">|</label>
+      <img title="GitHub" alt="GitHub_Icon" class="footer-icon" src="./assets/GitHub_Icon.png">
+      <p>Find the<a href="https://github.com/microsoft/powerbi-client-vue-js" target="_blank" rel="noreferrer noopener">source code</a></p>
+    </div>
   </div>
 </template>
 
@@ -311,16 +319,28 @@ button {
 }
 
 .footer {
-  background: #eef3f8 0 0 no-repeat padding-box;
-  bottom: 0;
-  height: 39px;
-  opacity: 1;
-  justify-content: center;
+  align-items: center;
+  background: #f7f8fa 0 0 no-repeat padding-box;
+  display: flex;
   font: 400 16px/21px 'Segoe UI';
-  padding-top: 9px;
-  opacity: 1;
-  text-align: center;
+  height: 42px;
+  justify-content: center;
   width: 100%;
+}
+
+.footer * {
+  padding: 0 3px;
+}
+
+.footer-icon {
+  border-radius: 50%;
+  height: 22px;
+  vertical-align: middle;
+}
+
+.footer a {
+  color: #3a3a3a;
+  text-decoration: underline;
 }
 
 body {
