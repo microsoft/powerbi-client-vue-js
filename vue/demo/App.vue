@@ -52,6 +52,8 @@ const phasedEmbeddingFlag = false;
 // CSS Class to be passed to the wrapper
 const reportClass = 'report-container';
 
+let report: Report;
+
 // Handles the embed config response for embedding
 export interface ConfigResponse {
   Id: string;
@@ -108,7 +110,7 @@ export default {
       ]) as  Map<string, (event?: service.ICustomEvent<any>, embeddedEntity?: Embed) => void | null> ,
 
       // Store Embed object from Report component
-      report: Report,
+      report,
       reportClass,
       phasedEmbeddingFlag
     };
