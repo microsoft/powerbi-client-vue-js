@@ -11,20 +11,6 @@ Write-Host "Global npm version"
 
 $exitCode = 0;
 
-Write-Host "start: try install latest Vue Client CLI version"
-& npm install @vue/cli@^5.0.1 -g
-Write-Host "done: try install latest Vue Client CLI version"
-
-Write-Host "Global Vue Client CLI version"
-& vue --version
-
-$exitCode += $LASTEXITCODE;
-
-if ($exitCode -ne 0) {
-  Write-Host "Failed to install latest Vue Client CLI version"
-  exit $exitCode
-}
-
 Write-Host "start: try install latest npm version"
 & npm install npm@latest -g
 Write-Host "done: try install latest npm version"

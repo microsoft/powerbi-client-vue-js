@@ -17,15 +17,14 @@ parameters: # parameters are shown up in ADO UI in a build queue time
   default: false
 
 variables:
-  CDP_DEFINITION_BUILD_COUNT_DAY: $[counter('', 0)] # needed for onebranch.pipeline.version task https://aka.ms/obpipelines/versioning
   system.debug: ${{ parameters.debug }}
   ENABLE_PRS_DELAYSIGN: 0
   ROOT: $(Build.SourcesDirectory)
   REPOROOT: $(Build.SourcesDirectory)
   OUTPUTROOT: $(REPOROOT)\out
-  NUGET_XMLDOC_MODE: none
+  NUGET_XMLDOC_MODE: skip
 
-  WindowsContainerImage: 'cdpxwin1809.azurecr.io/global/vse2019:latest' # Docker image which is used to build the project https://aka.ms/obpipelines/containers
+  WindowsContainerImage: 'onebranch.azurecr.io/windows/ltsc2019/vse2022:latest' # Docker image which is used to build the project https://aka.ms/obpipelines/containers
 
 resources:
   repositories: 
@@ -40,10 +39,8 @@ extends:
     globalSdl: # https://aka.ms/obpipelines/sdl
       tsa:
         enabled: false # onebranch publish all sdl results to TSA. If TSA is disabled all SDL tools will forced into 'break' build mode.
-      binskim:
-        break: false # always break the build on binskim issues. You can disable it by setting to 'false'
-      policheck:
-        break: false # always break the build on policheck issues. You can disable it by setting to 'false'
+      cg:
+        failOnAlert: false
 
     stages:
     - stage: build
@@ -51,24 +48,20 @@ extends:
       - job: main
         pool:
           type: windows  # read more about custom job pool types at https://aka.ms/obpipelines/yaml/jobs
-        
+
         variables: # More settings at https://aka.ms/obpipelines/yaml/jobs
           ob_outputDirectory: '$(OUTPUTROOT)' # this directory is uploaded to pipeline artifacts, reddog and cloudvault. More info at https://aka.ms/obpipelines/artifacts
           ob_sdl_binskim_break: true # https://aka.ms/obpipelines/sdl
+          ob_artifactBaseName: 'drop'
 
         steps:
-
-          - task: NodeTool@0
-            displayName: 'Install Node.js'
-            inputs:
-                versionSpec: '16.x'
-
           # Custom Versioning - we will build the version using package.json in versioning commands. 
-          - task: CmdLine@2
+          - task: PowerShell@2
             displayName: 'Set Version'
             inputs:
-              script: '$(Build.SourcesDirectory)\.pipelines\onebranch_run_ps.cmd version.ps1'
-              workingDirectory: '$(Build.SourcesDirectory)\vue'
+              targetType: 'filePath'
+              filePath: '$(Build.SourcesDirectory)\.pipelines\version.ps1'
+              workingDirectory: '$(Build.SourcesDirectory)'
 
           # Add the versioning task after running Version script
           - task: onebranch.pipeline.version@1
@@ -77,83 +70,65 @@ extends:
               customVersion: '$(CustomBuildNumber)'
 
           - task: npmAuthenticate@0
+            displayName: 'NPM Authenticate'
             inputs:
-              workingFile: 'vue/.npmrc'
+              workingFile: '$(Build.SourcesDirectory)\vue\.npmrc'
 
-          - task: CmdLine@2
-            displayName: 'NPM Install'
+          - task: NodeTool@0
+            displayName: 'Install Node.js'
             inputs:
-              script: '$(Build.SourcesDirectory)\.pipelines\onebranch_run_ps.cmd restore.ps1'
-              workingDirectory: '$(Build.SourcesDirectory)\vue'
+                versionSpec: '16.x'
 
-          # Commands to run during the build stage.
-          - task: CmdLine@2
+          - task: PowerShell@2
+            displayName: 'Restore'
+            inputs:
+              targetType: 'filePath'
+              filePath: '$(Build.SourcesDirectory)\.pipelines\restore.ps1'
+              workingDirectory: '$(Build.SourcesDirectory)'
+
+          - task: PowerShell@2
             displayName: 'Build'
             inputs:
-              script: '$(Build.SourcesDirectory)\.pipelines\onebranch_run_ps.cmd build.ps1'
-              workingDirectory: '$(Build.SourcesDirectory)\vue'
+              targetType: 'filePath'
+              filePath: '$(Build.SourcesDirectory)\.pipelines\build.ps1'
+              workingDirectory: '$(Build.SourcesDirectory)'
 
-          # Signing the files created by the build script
-          - task: onebranch.pipeline.signing@1
-            displayName: 'Sign binaries'
-            inputs:
-              command: 'sign'
-              signing_environment: 'azure-ado'
-              signing_profile: 'internal_azure_service'
-              files_to_sign: 'vue\dist\**\*;README.md;vue\package.json;vue\*.md'
-              search_root: '$(Build.SourcesDirectory)'
-
-          # Commands to run during the packaging stage.
-          - task: CmdLine@2
+          - task: PowerShell@2
             displayName: 'Package'
             inputs:
-              script: '$(Build.SourcesDirectory)\.pipelines\onebranch_run_ps.cmd package.ps1'
-              workingDirectory: '$(Build.SourcesDirectory)\vue'
+              targetType: 'filePath'
+              filePath: '$(Build.SourcesDirectory)\.pipelines\package.ps1'
+              workingDirectory: '$(Build.SourcesDirectory)'
 
-          # Signing the files created by the packaging script
-          - task: onebranch.pipeline.signing@1
-            displayName: 'Sign binaries'
-            inputs:
-              command: 'sign'
-              signing_environment: 'azure-ado'
-              signing_profile: 'internal_azure_service'
-              files_to_sign: '**/*.tgz'
-              search_root: '$(Build.SourcesDirectory)'
-
-          # Copying build artifacts to the Output folder.
-          - task: CopyFiles@2
-            displayName: 'Copy Dist to Output folder'
-            inputs:
-              Contents: |
-                $(Build.SourcesDirectory)\README.md
-                $(Build.SourcesDirectory)\LICENSE.txt
-                !$(Build.SourcesDirectory)\vue\node_modules\**
-              TargetFolder: '$(OUTPUTROOT)\outputs\build\build_artifacts'
-              
           # Copying build artifacts to the Output folder.
           - task: CopyFiles@2
             displayName: 'Copy Dist to Output folder'
             inputs:
               SourceFolder: '$(Build.SourcesDirectory)\vue'
               Contents: |
-                $(Build.SourcesDirectory)\vue\dist\**
-                $(Build.SourcesDirectory)\vue\package.json
-                !$(Build.SourcesDirectory)\vue\node_modules\**
+                README.md
+                LICENSE.txt
+                dist\**
+                package.json
+                !**\node_modules\**\*
               TargetFolder: '$(OUTPUTROOT)\outputs\build\build_artifacts'
 
           # Copying source artifacts to the Output folder.
           - task: CopyFiles@2
             displayName: 'Copy source to Output folder'
             inputs:
+              SourceFolder: '$(Build.SourcesDirectory)'
               Contents: |
-                $(Build.SourcesDirectory)\vue\**
-                $(Build.SourcesDirectory)\*.md
-                $(Build.SourcesDirectory)\LICENSE.txt
-                !.git/**/*
-                !$(Build.SourcesDirectory)\vue\dist\**
-                !$(Build.SourcesDirectory)\vue\package-lock.json
-                !$(Build.SourcesDirectory)\vue\node_modules\**
-                !$(Build.SourcesDirectory)\vue\*.tgz
+                vue\**\*
+                *.md
+                LICENSE.txt
+                !.git\**\*
+                !.pipelines\**\*
+                !**\dist\**
+                !**\package-lock.json
+                !**\node_modules\**\*
+                !**\out\**\*
+                !**\*.tgz
               TargetFolder: '$(OUTPUTROOT)\outputs\build\source'
 
           # Copying tgz packages to the Output folder.
@@ -162,5 +137,15 @@ extends:
             inputs:
               SourceFolder: '$(Build.SourcesDirectory)\vue'
               Contents: |
-                $(Build.SourcesDirectory)\vue\*.tgz
+                *.tgz
               TargetFolder: '$(OUTPUTROOT)\outputs\package\tgz-package'
+
+          # Signing the files created by the build and packaging script
+          - task: onebranch.pipeline.signing@1
+            displayName: 'Sign binaries'
+            inputs:
+              command: 'sign'
+              signing_environment: 'azure-ado'
+              signing_profile: 'internal_azure_service'
+              files_to_sign: '**'
+              search_root: '$(OUTPUTROOT)'
