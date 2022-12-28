@@ -102,15 +102,21 @@ extends:
 
           # Copying build artifacts to the Output folder.
           - task: CopyFiles@2
+            displayName: 'Copy Readme and License files to Output folder'
+            inputs:
+              SourceFolder: '$(Build.SourcesDirectory)'
+              Contents: |
+                README.md
+                LICENSE.txt
+              TargetFolder: '$(OUTPUTROOT)\outputs\build\build_artifacts'
+
+          - task: CopyFiles@2
             displayName: 'Copy Dist to Output folder'
             inputs:
               SourceFolder: '$(Build.SourcesDirectory)\vue'
               Contents: |
-                README.md
-                LICENSE.txt
                 dist\**
                 package.json
-                !**\node_modules\**\*
               TargetFolder: '$(OUTPUTROOT)\outputs\build\build_artifacts'
 
           # Copying source artifacts to the Output folder.
