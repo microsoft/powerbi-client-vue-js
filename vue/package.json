@@ -1,13 +1,14 @@
 {
   "name": "powerbi-client-vue-js",
-  "version": "1.0.1",
+  "version": "1.0.3",
   "description": "VueJS wrapper for powerbi-client library",
   "files": [ "dist" ],
-  "main": "./dist/powerbi-client-vue-js.es.ts",
-  "module": "./dist/powerbi-client-vue-js.umd.ts",
+  "main": "./dist/powerbi-client-vue-js.es.js",
+  "module": "./dist/powerbi-client-vue-js.umd.js",
+  "types": "./dist/types/src/public-api.d.ts",
   "scripts": {
     "dev": "vite",
-    "build": "vue-tsc --noEmit && vite build",
+    "build": "vite build && vue-tsc --declaration --emitDeclarationOnly",
     "preview": "vite preview",
     "lint": "eslint ./src --ext .ts",
     "test": "jest src",

@@ -1,6 +1,6 @@
 {
 	"name": "powerbi-client-vue-js-demo",
-	"version": "1.0.0",
+	"version": "1.0.1",
 	"description": "Demo for usage of powerbi-client-vue-js",
 	"type": "module",
 	"scripts": {
@@ -10,7 +10,7 @@
 	},
 	"license": "MIT",
 	"dependencies": {
-		"powerbi-client-vue-js": "1.0.0",
+		"powerbi-client-vue-js": "1.0.3",
 		"powerbi-report-authoring": "^1.1.3",
 		"vue": "^3.2.25"
 	},
