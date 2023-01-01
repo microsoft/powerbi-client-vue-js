@@ -13,6 +13,8 @@
     "lib": ["esnext", "dom"],
     "skipLibCheck": true,
     "types": ["vite/client", "@types/jest"],
+    "declaration": true,
+    "declarationDir": "./dist/types",
   },
   "include": ["src/**/*.ts"],
   "references": [{ "path": "./tsconfig.node.json" }]
