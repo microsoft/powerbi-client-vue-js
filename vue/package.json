@@ -23,7 +23,7 @@
 	],
 	"repository": {
 		"type": "git",
-		"url": ""
+		"url": "https://github.com/microsoft/powerbi-client-vue-js"
 	},
 	"license": "MIT",
   "dependencies": {

@@ -1,5 +1,5 @@
 #################################################################################
-#                        OneBranch Pipelines - Buddy                            #
+#                        OneBranch Pipelines - Official                         #
 # This pipeline was created by EasyStart from a sample located at:              #
 #   https://aka.ms/obpipelines/easystart/samples                                #
 # Documentation:  https://aka.ms/obpipelines                                    #
@@ -23,22 +23,26 @@ variables:
   REPOROOT: $(Build.SourcesDirectory)
   OUTPUTROOT: $(REPOROOT)\out
   NUGET_XMLDOC_MODE: skip
+  ${{ if eq(variables['Build.DefinitionName'], 'powerbi-client-vue-js-Official') }}:
+    obpTemplate: v2/OneBranch.Official.CrossPlat.yml@templates # https://aka.ms/obpipelines/templates
+  ${{ else }}:
+    obpTemplate: v2/OneBranch.NonOfficial.CrossPlat.yml@templates # https://aka.ms/obpipelines/templates
 
   WindowsContainerImage: 'onebranch.azurecr.io/windows/ltsc2019/vse2022:latest' # Docker image which is used to build the project https://aka.ms/obpipelines/containers
 
 resources:
-  repositories: 
+  repositories:
     - repository: templates
       type: git
       name: OneBranch.Pipelines/GovernedTemplates
       ref: refs/heads/main
 
 extends:
-  template: v2/OneBranch.NonOfficial.CrossPlat.yml@templates # https://aka.ms/obpipelines/templates
+  template: ${{ variables.obpTemplate }}
   parameters:
     globalSdl: # https://aka.ms/obpipelines/sdl
       tsa:
-        enabled: false # onebranch publish all sdl results to TSA. If TSA is disabled all SDL tools will forced into 'break' build mode.
+        enabled: false
       cg:
         failOnAlert: false
 
