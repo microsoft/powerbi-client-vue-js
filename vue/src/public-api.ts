@@ -7,3 +7,4 @@ export { default as PowerBITileEmbed } from './components/PowerBITileEmbed';
 export { default as PowerBIPaginatedReportEmbed } from './components/PowerBIPaginatedReportEmbed';
 export { default as PowerBIVisualEmbed } from './components/PowerBIVisualEmbed';
 export { default as PowerBIQnaEmbed } from './components/PowerBIQnaEmbed';
+export { default as PowerBICreateReport} from './components/PowerBICreateReport';
