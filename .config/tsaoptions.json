@@ -1,0 +1,15 @@
+{
+    "codebaseName": "powerbi-client-vue-js",
+    "instanceUrl": "https://powerbi.visualstudio.com",
+    "projectName": "Embedded",
+    "areaPath" : "",
+    "iterationPath": "",
+    "notificationAliases": [
+        "@microsoft.com",
+        "@microsoft.com"
+    ],
+    "codebaseAdmins": [
+        "redmond\\biesba2"
+    ],
+    "ignoreBranchName": true
+}
