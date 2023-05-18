@@ -2,7 +2,7 @@
 // Licensed under the MIT License.
 
 import { defineComponent, toRaw, h, PropType} from 'vue';
-import { Embed, Report } from 'powerbi-client';
+import { Embed, Create } from 'powerbi-client';
 import { IReportCreateConfiguration } from 'powerbi-models';
 
 import PowerBIBase from '../mixins/PowerBIBase';
@@ -88,8 +88,8 @@ export default defineComponent({
       }
     },
 
-    getEmbed(): Report {
-      return this.embed as Report;
+    getCreateObj(): Create {
+      return this.embed as Create;
     }
   },
 });
