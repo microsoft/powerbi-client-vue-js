@@ -1,7 +1,7 @@
 {
     "codebaseName": "powerbi-client-vue-js",
     "instanceUrl": "https://powerbi.visualstudio.com",
-    "projectName": "Embedded",
+    "projectName": "Trident",
     "areaPath" : "Trident\\ISV and ALM\\Embedded",
     "iterationPath": "Trident\\Releases",
     "notificationAliases": [
