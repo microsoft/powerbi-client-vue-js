@@ -147,7 +147,7 @@ describe('PowerBICreateReport', () => {
       });
 
       // Initiliaze testCreateReport
-      testCreateReport = wrapper.vm.getEmbed();
+      testCreateReport = wrapper.vm.getCreateObj();
     });
 
     it('clears previous event handlers and sets new event handlers', async () => {
