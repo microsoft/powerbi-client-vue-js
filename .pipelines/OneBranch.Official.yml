@@ -41,8 +41,11 @@ extends:
   template: ${{ variables.obpTemplate }}
   parameters:
     globalSdl: # https://aka.ms/obpipelines/sdl
+      codeql:
+        compiled: 
+          enabled: true
       tsa:
-        enabled: false
+        enabled: true
       cg:
         failOnAlert: false
 
