@@ -10,11 +10,15 @@
         <button @click="changeVisualType()">Change visual type</button>
         <button @click="hideFilterPane()">Hide filter pane</button>
         <button @click="setDataSelectedEvent()">Set event</button>
+        <button @click="createNewVisual()">Create a new Visual</button>
+        <button @click="deleteVisual()">Delete</button>
+        <button @click="createNewPage()">Nieuwe pagina</button>
         <label class="display-message">{{ displayMessage }}</label>
       </template>
       <template v-else>
         <label class="display-message position">{{ displayMessage }}</label>
         <button @click="embedReport()" class="embed-report">Embed Report</button>
+        <button @click="embedVisual()" class="embed-report">Embed Visual</button>
       </template>
 
       <PowerBIReportEmbed v-if="isEmbedded"
@@ -24,6 +28,13 @@
         :event-handlers="eventHandlersMap"
         @report-obj="setReportObj">
       </PowerBIReportEmbed>
+
+      <PowerBIVisualEmbed v-if="isEmbeddedVisual"
+        :embed-config="visualSampleReportConfig"
+        :css-class-name="reportClass"
+        :event-handlers="eventHandlersMap"
+        @report-obj="setReportObj">
+      </PowerBIVisualEmbed>
     </div>
 
     <div class="footer">
@@ -39,11 +50,12 @@
 </template>
 
 <script lang="ts">
-import { models, Report, IReportEmbedConfiguration, Page, service, Embed } from 'powerbi-client';
+import { models, Report, IReportEmbedConfiguration, Page, service, Embed, IVisualEmbedConfiguration } from 'powerbi-client';
 import { IHttpPostMessageResponse } from 'http-post-message';
 import 'powerbi-report-authoring';
 
-import { PowerBIReportEmbed } from 'powerbi-client-vue-js';
+import PowerBIReportEmbed from '../src/components/PowerBIReportEmbed';
+import PowerBIVisualEmbed from '../src/components/PowerBIVisualEmbed';
 import { reportUrl } from './public/constant';
 
 // Flag which specifies whether to use phase embedding or not
@@ -68,15 +80,17 @@ export default {
 
   components: {
     PowerBIReportEmbed,
+    PowerBIVisualEmbed
   },
 
   data() {
     return {
       // Track Report embedding status
       isEmbedded: false,
+      isEmbeddedVisual: false,
 
       // Overall status message of embedding
-      displayMessage: 'The report is bootstrapped. Click Embed Report button to set the access token.',
+      displayMessage: 'The report is bootstrapped. Click Embed Report or Embed Visual button to set the access token.',
 
 
       // Pass the basic embed configurations to the wrapper to bootstrap the report on first load
@@ -88,6 +102,14 @@ export default {
         accessToken: undefined,
         settings: undefined,
       } as IReportEmbedConfiguration,
+
+      visualSampleReportConfig: {
+        type: 'visual',
+        embedUrl: undefined,
+        tokenType: models.TokenType.Embed,
+        accessToken: undefined,
+        settings: undefined,
+      } as IVisualEmbedConfiguration,
 
       /**
        * Map of event handlers to be applied to the embedded report
@@ -148,6 +170,35 @@ export default {
       this.displayMessage = 'Use the buttons above to interact with the report using Power BI Client APIs.';
     },
 
+    async embedVisual(): Promise<void> {
+
+      // Get the embed config from the service and set the reportConfigResponse
+      const reportConfigResponse: Response = await fetch(reportUrl);
+      if (!reportConfigResponse?.ok) {
+        console.error(`Failed to fetch config for report. Status: ${reportConfigResponse.status} ${reportConfigResponse.statusText}`);
+        return;
+      }
+
+      const reportConfig: ConfigResponse = await reportConfigResponse.json();
+
+      // Update the reportConfig to embed the PowerBI visual
+
+      this.visualSampleReportConfig = {
+        ...this.visualSampleReportConfig,
+        accessToken: reportConfig.EmbedToken.Token,
+        embedUrl: reportConfig.EmbedUrl,
+        id: reportConfig.Id,
+        pageName: 'ReportSection600dd9293d71ade01765',
+        visualName: 'VisualContainer6'
+       };
+ 
+
+      this.isEmbeddedVisual = true;
+
+      // Update the display message
+      this.displayMessage = 'Use the buttons above to interact with the report using Power BI Client APIs.';
+    },
+
     /**
      * Change visual type
      *
@@ -179,7 +230,8 @@ export default {
 
       try {
         // Change the visual type using powerbi-report-authoring
-        // For more information: https://docs.microsoft.com/en-us/javascript/api/overview/powerbi/report-authoring-overview
+        // For more information: 
+        // https://docs.microsoft.com/en-us/javascript/api/overview/powerbi/report-authoring-overview
         // Get the visual
         const visual = await activePage.getVisualByName('VisualContainer6');
 
@@ -196,6 +248,37 @@ export default {
         }
       }
     },
+
+    async createNewVisual(): Promise<void> {
+       const pages: Page[] = await this.report.getPages();
+
+      const activePage: Page | undefined = pages.find((page) => page.isActive);
+
+      if (!activePage) {
+        this.displayMessage = 'No Active page found';
+          return;
+      }
+
+      await activePage.createVisual('comboChart')
+    },
+
+    async deleteVisual(): Promise<void> {
+       const pages: Page[] = await this.report.getPages();
+
+      const activePage: Page | undefined = pages.find((page) => page.isActive);
+
+      if (!activePage) {
+        this.displayMessage = 'No Active page found';
+          return;
+      }
+
+      await activePage.deleteVisual("VisualContainer4");
+    },
+
+    async createNewPage(): Promise<void> {
+      await this.report.addPage("boop");
+    },
+    
 
     /**
      * Hide Filter Pane
@@ -317,7 +400,7 @@ button {
 .embed-report {
   margin-top: 18px;
   text-align: center;
-  margin-right: 0;
+  margin-right: 3;
 }
 
 .footer {
