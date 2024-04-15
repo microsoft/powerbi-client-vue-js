@@ -15,7 +15,7 @@ describe('PowerBIVisualEmbed', () => {
     id: 'fakeId',
     visualName: 'fakeVisual',
     pageName: 'fakePage',
-    embedUrl: 'fakeUrl',
+    embedUrl: 'https://app.powerbi.com/fakeEmbedUrl',
     accessToken: 'fakeToken'
   };
 
@@ -25,7 +25,7 @@ describe('PowerBIVisualEmbed', () => {
     id: 'fakeId',
     visualName: 'fakeVisual',
     pageName: 'fakePage',
-    embedUrl: 'fakeUrl',
+    embedUrl: 'https://app.powerbi.com/fakeEmbedUrl',
   };
 
   describe('Basic tests', () => {
@@ -145,7 +145,7 @@ describe('PowerBIVisualEmbed', () => {
       await wrapper.setProps({ embedConfig: configWithAccessToken });
 
       // Embed URL of different report
-      configWithAccessToken.embedUrl = 'newFakeUrl';
+      configWithAccessToken.embedUrl = 'https://app.powerbi.com/newFakeEmbedUrl';
 
       // Act
       await wrapper.setProps({ embedConfig: configWithAccessToken });

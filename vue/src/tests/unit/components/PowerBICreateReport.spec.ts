@@ -15,7 +15,7 @@ describe('PowerBICreateReport', () => {
   const configWithAccessToken: IReportCreateConfiguration = {
     type: 'create',
     datasetId: 'fakeId',
-    embedUrl: 'fakeUrl',
+    embedUrl: 'https://app.powerbi.com/fakeEmbedUrl',
     accessToken: 'fakeToken',
   };
 
@@ -74,7 +74,7 @@ describe('PowerBICreateReport', () => {
     const config: IReportCreateConfiguration = {
       type: 'create',
       datasetId: 'fakeId',
-      embedUrl: 'fakeUrl',
+      embedUrl: 'https://app.powerbi.com/fakeEmbedUrl',
       accessToken: 'fakeToken',
     };
 
@@ -103,7 +103,7 @@ describe('PowerBICreateReport', () => {
 
       // To Do: Need to Update the test case. Will be handled in seperate PR
       // Embed URL of different report
-      configWithAccessToken.embedUrl = 'newFakeUrl';
+      configWithAccessToken.embedUrl = 'https://app.powerbi.com/newFakeEmbedUrl';
 
       // Act
       await wrapper.setProps({ embedConfig: configWithAccessToken });
