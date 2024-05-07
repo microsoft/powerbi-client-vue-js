@@ -17,5 +17,6 @@
     "declarationDir": "./dist/types",
   },
   "include": ["src/**/*.ts"],
+  "exclude": ["src/tests/**"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

@@ -1,6 +1,6 @@
 {
   "name": "powerbi-client-vue-js",
-  "version": "1.0.3",
+  "version": "1.1.1",
   "description": "VueJS wrapper for powerbi-client library",
   "files": [ "dist" ],
   "main": "./dist/powerbi-client-vue-js.es.js",
@@ -16,34 +16,33 @@
     "install:demo": "cd demo && npm install"
   },
   "keywords": [
-		"microsoft",
-		"powerbi",
-		"embedded",
-		"vue-js"
-	],
-	"repository": {
-		"type": "git",
-		"url": ""
-	},
-	"license": "MIT",
+    "microsoft",
+    "powerbi",
+    "embedded",
+    "vue-js"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/microsoft/powerbi-client-vue-js"
+  },
+  "license": "MIT",
   "dependencies": {
-    "powerbi-client": "^2.21.1",
+    "powerbi-client": "^2.23.1",
     "powerbi-report-authoring": "^1.1.3",
-    "vue": "^3.2.25"
+    "vue": "^3.4.21"
   },
   "devDependencies": {
     "@types/jest": "^28.1.3",
-    "@typescript-eslint/eslint-plugin": "^5.33.0",
-    "@typescript-eslint/parser": "^5.33.0",
-    "@vitejs/plugin-vue": "^2.3.3",
+    "@typescript-eslint/eslint-plugin": "^7.5.0",
+    "@typescript-eslint/parser": "^7.5.0",
+    "@vitejs/plugin-vue": "^5.0.4",
     "@vue/test-utils": "^2.0.0",
-    "eslint": "^7.32.0",
-    "eslint-plugin-vue": "^8.0.3",
+    "eslint": "^8.57.0",
+    "eslint-plugin-vue": "^9.22.0",
     "jest": "^26.6.3",
     "ts-jest": "^26.5.6",
     "typescript": "^4.5.4",
-    "vite": "^2.9.9",
-    "vue-jest": "^5.0.0-alpha.10",
+    "vite": "^5.1.5",
     "vue-tsc": "^0.34.7"
   }
 }

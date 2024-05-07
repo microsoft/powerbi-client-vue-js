@@ -7,6 +7,7 @@ import { factories, service, Embed, Report, Dashboard, Tile, Qna, Visual } from 
 import { EventHandler, areMapsSame, SdkType, SdkWrapperVersion } from '../utils/utils';
 
 export enum EmbedType {
+  Create= 'create',
   Report = 'report',
   Dashboard = 'dashboard',
   Tile = 'tile',
@@ -69,20 +70,22 @@ export default defineComponent({
 
       // Append entity specific events
       switch (entityType) {
+        case EmbedType.Create:
+          break;
         case EmbedType.Report:
-          allowedEvents = [...allowedEvents, ...Report.allowedEvents]
+          allowedEvents = [...allowedEvents, ...Report.allowedEvents];
           break;
         case EmbedType.Dashboard:
-          allowedEvents = [...allowedEvents, ...Dashboard.allowedEvents]
+          allowedEvents = [...allowedEvents, ...Dashboard.allowedEvents];
           break;
         case EmbedType.Tile:
-          allowedEvents = [...allowedEvents, ...Tile.allowedEvents]
+          allowedEvents = [...allowedEvents, ...Tile.allowedEvents];
           break;
         case EmbedType.Qna:
-          allowedEvents = [...allowedEvents, ...Qna.allowedEvents]
+          allowedEvents = [...allowedEvents, ...Qna.allowedEvents];
           break;
         case EmbedType.Visual:
-          allowedEvents = [...allowedEvents, ...Visual.allowedEvents]
+          allowedEvents = [...allowedEvents, ...Visual.allowedEvents];
           break;
         default:
           console.error(`Invalid embed type ${entityType}`);

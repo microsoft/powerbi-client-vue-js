@@ -13,7 +13,7 @@ describe('PowerBIDashboardEmbed', () => {
   const configWithAccessToken = {
     type: 'dashboard',
     id: 'fakeId',
-    embedUrl: 'fakeUrl',
+    embedUrl: 'https://app.powerbi.com/fakeEmbedUrl',
     accessToken: 'fakeToken',
   };
 
@@ -21,7 +21,7 @@ describe('PowerBIDashboardEmbed', () => {
   const configWithoutAccessToken = {
     type: 'dashboard',
     id: 'fakeId',
-    embedUrl: 'fakeUrl'
+    embedUrl: 'https://app.powerbi.com/fakeEmbedUrl'
   };
 
   describe('Basic tests', () => {
@@ -136,7 +136,7 @@ describe('PowerBIDashboardEmbed', () => {
       await wrapper.setProps({ embedConfig: configWithAccessToken });
 
       // Embed URL of different report
-      configWithAccessToken.embedUrl = 'newFakeUrl';
+      configWithAccessToken.embedUrl = 'https://app.powerbi.com/newFakeEmbedUrl';
 
       // Act
       await wrapper.setProps({ embedConfig: configWithAccessToken });

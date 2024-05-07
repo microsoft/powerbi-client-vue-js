@@ -2,7 +2,7 @@
 // Licensed under the MIT License.
 
 import { defineComponent, PropType, toRaw, h } from 'vue';
-import { IEmbedConfiguration } from 'powerbi-client';
+import { IPaginatedReportLoadConfiguration } from 'powerbi-models';
 
 import PowerBIBase from '../mixins/PowerBIBase';
 
@@ -12,7 +12,7 @@ export default defineComponent({
   props: {
     // Configuration for embedding the PowerBI Paginated report (Required)
     embedConfig: {
-      type: Object as PropType<IEmbedConfiguration>,
+      type: Object as PropType<IPaginatedReportLoadConfiguration>,
       required: true,
     },
   },
@@ -24,7 +24,7 @@ export default defineComponent({
   },
 
   watch: {
-    embedConfig: function (value: IEmbedConfiguration, oldValue: IEmbedConfiguration) {
+    embedConfig: function (value: IPaginatedReportLoadConfiguration, oldValue: IPaginatedReportLoadConfiguration) {
       // Check if the function is being called for the first time
       if (!oldValue) {
         return;
@@ -36,7 +36,7 @@ export default defineComponent({
   },
 
   computed: {
-    config(): IEmbedConfiguration {
+    config(): IPaginatedReportLoadConfiguration {
       return toRaw(this.embedConfig);
     }
   },

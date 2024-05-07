@@ -14,7 +14,7 @@ describe('PowerBITileEmbed', () => {
     type: 'tile',
     id: 'fakeTileId',
     dashboardId: 'fakeId',
-    embedUrl: 'fakeUrl',
+    embedUrl: 'https://app.powerbi.com/fakeEmbedUrl',
     accessToken: 'fakeToken',
   };
 
@@ -22,7 +22,7 @@ describe('PowerBITileEmbed', () => {
   const configWithoutAccessToken = {
     type: 'tile',
     id: 'fakeTileId',
-    embedUrl: 'fakeUrl',
+    embedUrl: 'https://app.powerbi.com/fakeEmbedUrl',
     dashboardId: 'fakeId',
   };
 
@@ -139,7 +139,7 @@ describe('PowerBITileEmbed', () => {
       await wrapper.setProps({ embedConfig: configWithAccessToken });
 
       // Embed URL of different tile
-      configWithAccessToken.embedUrl = 'newFakeUrl';
+      configWithAccessToken.embedUrl = 'https://app.powerbi.com/newFakeEmbedUrl';
 
       // Act
       await wrapper.setProps({ embedConfig: configWithAccessToken });
