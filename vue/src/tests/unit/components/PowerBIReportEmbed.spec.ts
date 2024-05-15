@@ -13,7 +13,7 @@ describe('PowerBIReportEmbed', () => {
   const configWithAccessToken = {
     type: 'report',
     id: 'fakeId',
-    embedUrl: 'fakeUrl',
+    embedUrl: 'https://app.powerbi.com/fakeEmbedUrl',
     accessToken: 'fakeToken',
   };
 
@@ -21,7 +21,7 @@ describe('PowerBIReportEmbed', () => {
   const configWithoutAccessToken = {
     type: 'report',
     id: 'fakeId',
-    embedUrl: 'fakeUrl'
+    embedUrl: 'https://app.powerbi.com/fakeEmbedUrl'
   };
 
   describe('Basic tests', () => {
@@ -138,7 +138,7 @@ describe('PowerBIReportEmbed', () => {
       await wrapper.setProps({ embedConfig: configWithAccessToken });
 
       // Embed URL of different report
-      configWithAccessToken.embedUrl = 'newFakeUrl';
+      configWithAccessToken.embedUrl = 'https://app.powerbi.com/newFakeEmbedUrl';
 
       // Act
       await wrapper.setProps({ embedConfig: configWithAccessToken });

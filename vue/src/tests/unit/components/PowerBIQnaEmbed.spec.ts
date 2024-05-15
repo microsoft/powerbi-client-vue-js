@@ -10,7 +10,7 @@ describe('PowerBIQnaEmbed', () => {
     const configWithAccessToken = {
       type: 'qna',
       id: 'fakeId',
-      embedUrl: 'fakeUrl',
+      embedUrl: 'https://app.powerbi.com/fakeEmbedUrl',
       accessToken: 'fakeToken',
       datasetIds: ['fakedatasetId']
     };
@@ -19,7 +19,7 @@ describe('PowerBIQnaEmbed', () => {
     const configWithoutAccessToken = {
       type: 'qna',
       id: 'fakeId',
-      embedUrl: 'fakeUrl',
+      embedUrl: 'https://app.powerbi.com/fakeEmbedUrl',
       datasetIds: ['fakedatasetId']
     };
 
@@ -137,7 +137,7 @@ describe('PowerBIQnaEmbed', () => {
       await wrapper.setProps({ embedConfig: configWithAccessToken });
 
       // Embed URL of different report
-      configWithAccessToken.embedUrl = 'newFakeUrl';
+      configWithAccessToken.embedUrl = 'https://app.powerbi.com/newFakeEmbedUrl';
 
       // Act
       await wrapper.setProps({ embedConfig: configWithAccessToken });

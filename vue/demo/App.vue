@@ -4,7 +4,6 @@
 <template>
   <div class="container">
     <div class="header">Power BI Embedded Vue JS Component Demo</div>
-
     <div class="controls">
       <template v-if="isEmbedded">
         <button @click="changeVisualType()">Change visual type</button>
@@ -39,6 +38,7 @@
 </template>
 
 <script lang="ts">
+import { defineComponent } from 'vue';
 import { models, Report, IReportEmbedConfiguration, Page, service, Embed } from 'powerbi-client';
 import { IHttpPostMessageResponse } from 'http-post-message';
 import 'powerbi-report-authoring';
@@ -63,7 +63,7 @@ export interface ConfigResponse {
   };
 }
 
-export default {
+export default defineComponent ({
   name: 'DemoApp',
 
   components: {
@@ -97,7 +97,11 @@ export default {
        * https://docs.microsoft.com/en-us/javascript/api/overview/powerbi/handle-events#report-events
        */
       eventHandlersMap: new Map([
-        ['loaded', () => console.log('Report has loaded')],
+        ['loaded', () => {
+            this.setTitle();
+            console.log('Report has loaded');
+          }
+        ],
         ['rendered', () => console.log('Report has rendered')],
         ['error', (event?: service.ICustomEvent<any>) => {
             if (event) {
@@ -243,6 +247,15 @@ export default {
       this.displayMessage = 'Data Selected event set successfully. Select data to see event in console.';
     },
 
+    setTitle(): void {
+      // Check whether Report is available or not
+      if (!this.reportAvailable()) {
+        return;
+      }
+
+      this.report.setComponentTitle('Embedded Report');
+    },
+
     /**
      * Assign Embed Object from Report component to report
      * @param value
@@ -264,7 +277,7 @@ export default {
       return true;
     }
   },
-};
+});
 </script>
 
 <style>

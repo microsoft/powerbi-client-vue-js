@@ -9,7 +9,7 @@ describe('PowerBIPaginatedReportEmbed', () => {
   const configWithAccessToken = {
     type: 'report',
     id: 'fakeId',
-    embedUrl: 'fakeUrl',
+    embedUrl: 'https://app.powerbi.com/fakeEmbedUrl',
     accessToken: 'fakeToken',
   };
 
@@ -70,7 +70,7 @@ describe('PowerBIPaginatedReportEmbed', () => {
     const config = {
       type: 'report',
       id: 'fakeId',
-      embedUrl: 'fakeUrl',
+      embedUrl: 'https://app.powerbi.com/fakeEmbedUrl',
       accessToken: 'fakeToken',
     };
 
@@ -98,7 +98,7 @@ describe('PowerBIPaginatedReportEmbed', () => {
       await wrapper.setProps({ embedConfig: configWithAccessToken });
 
       // Embed URL of different report
-      configWithAccessToken.embedUrl = 'newFakeUrl';
+      configWithAccessToken.embedUrl = 'https://app.powerbi.com/newFakeEmbedUrl';
 
       // Act
       await wrapper.setProps({ embedConfig: configWithAccessToken });

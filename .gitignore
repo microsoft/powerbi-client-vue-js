@@ -3,7 +3,8 @@ node_modules
 package-lock.json
 dist
 *.tgz
-
+.pipelines/
+.config/
 
 
 # local env files
