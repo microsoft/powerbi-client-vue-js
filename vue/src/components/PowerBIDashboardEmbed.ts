@@ -74,6 +74,7 @@ export default defineComponent({
      */
     embedOrBootstrap(): void {
       // Decide to embed or bootstrap
+      this.powerbi.reset(this.$refs.containerRef as HTMLElement);
       if (this.config?.accessToken && this.config?.embedUrl) {
         this.embedDashboard();
       } else {
@@ -92,7 +93,6 @@ export default defineComponent({
         console.error("HTML container is not rendered or available");
         return;
       }
-
       this.embed = this.powerbi.embed(this.$refs.containerRef as HTMLElement, this.config);
     },
 
