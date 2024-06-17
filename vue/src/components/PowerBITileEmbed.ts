@@ -74,6 +74,7 @@ export default defineComponent({
      */
     embedOrBootstrap(): void {
        // Decide to embed or bootstrap
+      this.powerbi.reset(this.$refs.containerRef as HTMLElement);
       if (this.embedConfig?.accessToken && this.embedConfig?.embedUrl) {
         this.embedTile();
       } else {

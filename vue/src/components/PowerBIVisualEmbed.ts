@@ -73,7 +73,8 @@ export default defineComponent({
      * @returns void
      */
     embedOrBootstrap(): void {
-       if (this.config?.accessToken && this.config?.embedUrl) {
+      this.powerbi.reset(this.$refs.containerRef as HTMLElement);
+      if (this.config?.accessToken && this.config?.embedUrl) {
         this.embedVisual();
       } else {
         this.embed = this.powerbi.bootstrap(this.$refs.containerRef as HTMLElement, this.config);
