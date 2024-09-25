@@ -6,15 +6,17 @@
     <div class="header">Power BI Embedded Vue JS Component Demo</div>
     <div class="controls">
       <template v-if="isEmbedded">
-        <button @click="changeVisualType()">Change visual type</button>
-        <button @click="hideFilterPane()">Hide filter pane</button>
-        <button @click="setDataSelectedEvent()">Set event</button>
+        <button @click="toggleFilterPane()">{{ filterPaneBtnText }}</button>
+        <button @click="toggleTheme()">{{ themeBtnText }}</button>
+        <button @click="setDataSelectedEvent()">Set 'dataSelected' event</button>
         <label class="display-message">{{ displayMessage }}</label>
       </template>
       <template v-else>
         <label class="display-message position">{{ displayMessage }}</label>
-        <button @click="embedReport()" class="embed-report">Embed Report</button>
+        <button @click="openEmbedConfigDialog()" class="embed-report">Embed Report</button>
       </template>
+
+      <EmbedConfigDialog :isEmbedConfigDialogVisible="isEmbedConfigDialogVisible" @embedConfigEvent="embedReport" @update:isEmbedConfigDialogVisible="isEmbedConfigDialogVisible = $event" />
 
       <PowerBIReportEmbed v-if="isEmbedded"
         :embed-config="sampleReportConfig"
@@ -39,12 +41,13 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import { models, Report, IReportEmbedConfiguration, Page, service, Embed } from 'powerbi-client';
+import { models, Report, IReportEmbedConfiguration, service, Embed } from 'powerbi-client';
 import { IHttpPostMessageResponse } from 'http-post-message';
 import 'powerbi-report-authoring';
 
 import { PowerBIReportEmbed } from 'powerbi-client-vue-js';
-import { reportUrl } from './public/constant';
+import { sampleTheme } from './constants/constants';
+import EmbedConfigDialog from './components/EmbedConfigDialog.vue';
 
 // Flag which specifies whether to use phase embedding or not
 const phasedEmbeddingFlag = false;
@@ -56,11 +59,8 @@ let report: Report;
 
 // Handles the embed config response for embedding
 export interface ConfigResponse {
-  Id: string;
-  EmbedUrl: string;
-  EmbedToken: {
-    Token: string;
-  };
+  embedUrl: string;
+  aadToken: string
 }
 
 export default defineComponent ({
@@ -68,6 +68,7 @@ export default defineComponent ({
 
   components: {
     PowerBIReportEmbed,
+    EmbedConfigDialog,
   },
 
   data() {
@@ -76,15 +77,22 @@ export default defineComponent ({
       isEmbedded: false,
 
       // Overall status message of embedding
-      displayMessage: 'The report is bootstrapped. Click Embed Report button to set the access token.',
+      displayMessage: 'The report is bootstrapped. Click the Embed Report button to set the access token.',
 
+      // Flag for button toggles
+      isFilterPaneVisible: true,
+      isThemeApplied: false,
+
+      // Button text
+      filterPaneBtnText: "Hide filter pane",
+      themeBtnText: "Set theme",
 
       // Pass the basic embed configurations to the wrapper to bootstrap the report on first load
       // Values for properties like embedUrl, accessToken and settings will be set on click of button
       sampleReportConfig: {
         type: 'report',
         embedUrl: undefined,
-        tokenType: models.TokenType.Embed,
+        tokenType: models.TokenType.Aad,
         accessToken: undefined,
         settings: undefined,
       } as IReportEmbedConfiguration,
@@ -116,34 +124,28 @@ export default defineComponent ({
       // Store Embed object from Report component
       report,
       reportClass,
-      phasedEmbeddingFlag
+      phasedEmbeddingFlag,
+      isEmbedConfigDialogVisible: false
     };
   },
 
   methods: {
     /**
-     * Embeds report
-     *
-     * @returns Promise<void>
+     * Show the dailog for Embed Config input
      */
-    async embedReport(): Promise<void> {
-      console.log('Embed Report clicked');
+    openEmbedConfigDialog(): void {
+      this.isEmbedConfigDialogVisible = true;
+    },
 
-      // Get the embed config from the service and set the reportConfigResponse
-      const reportConfigResponse: Response = await fetch(reportUrl);
-      if (!reportConfigResponse?.ok) {
-        console.error(`Failed to fetch config for report. Status: ${reportConfigResponse.status} ${reportConfigResponse.statusText}`);
-        return;
-      }
-
-      const reportConfig: ConfigResponse = await reportConfigResponse.json();
-
+    /**
+     * Embeds report
+     */
+    embedReport(reportConfig: ConfigResponse): void {
       // Update the reportConfig to embed the PowerBI report
       this.sampleReportConfig = {
         ...this.sampleReportConfig,
-        id: reportConfig.Id,
-        embedUrl: reportConfig.EmbedUrl,
-        accessToken: reportConfig.EmbedToken.Token
+        embedUrl: reportConfig.embedUrl,
+        accessToken: reportConfig.aadToken,
       };
 
       this.isEmbedded = true;
@@ -153,78 +155,30 @@ export default defineComponent ({
     },
 
     /**
-     * Change visual type
-     *
-     * @returns Promise<void>
-     */
-    async changeVisualType(): Promise<void> {
-      // Check Report is available or not
-      if(!this.reportAvailable()) {
-        return;
-      }
-
-      // Get all the pages of the report
-      const pages: Page[] = await this.report.getPages();
-
-      // Check if the pages are available
-      if (pages.length === 0) {
-        this.displayMessage = 'No pages found.';
-        return;
-      }
-
-      // Get active page of the report
-      const activePage: Page | undefined = pages.find((page) => page.isActive);
-
-      if (!activePage) {
-        this.displayMessage = 'No Active page found';
-        return;
-      }
-
-
-      try {
-        // Change the visual type using powerbi-report-authoring
-        // For more information: https://docs.microsoft.com/en-us/javascript/api/overview/powerbi/report-authoring-overview
-        // Get the visual
-        const visual = await activePage.getVisualByName('VisualContainer6');
-
-        const response = await visual.changeType('lineChart');
-
-        this.displayMessage = `The ${visual.type} was updated to lineChart.`;
-        console.log(this.displayMessage);
-        return response;
-      } catch (error) {
-        if (error === 'PowerBIEntityNotFound') {
-          console.log('No Visual found with that name');
-        } else {
-          console.log(error);
-        }
-      }
-    },
-
-    /**
-     * Hide Filter Pane
+     * Toggle Filter Pane
      *
      * @returns Promise<IHttpPostMessageResponse<void> | undefined>
      */
-    async hideFilterPane(): Promise<IHttpPostMessageResponse<void> | undefined> {
+    async toggleFilterPane(): Promise<IHttpPostMessageResponse<void> | undefined> {
       // Check whether Report is available or not
       if(!this.reportAvailable()) {
         return;
       }
-
+      this.isFilterPaneVisible = !this.isFilterPaneVisible;
       // New settings to hide filter pane
       const settings = {
         panes: {
           filters: {
-            expanded: false,
-            visible: false,
+            expanded: this.isFilterPaneVisible,
+            visible: this.isFilterPaneVisible,
           },
         },
       };
 
       try {
         const response: IHttpPostMessageResponse<void> = await this.report.updateSettings(settings);
-        this.displayMessage = 'Filter pane is hidden.';
+        this.displayMessage = this.isFilterPaneVisible ? "Filter pane is visible" : "Filter pane is hidden";
+        this.filterPaneBtnText = this.isFilterPaneVisible ? "Hide filter pane" : "Show filter pane";
         console.log(this.displayMessage);
         return response;
       } catch (error) {
@@ -235,8 +189,6 @@ export default defineComponent ({
 
     /**
      * Set data selected event
-     *
-     * @returns void
      */
     setDataSelectedEvent(): void {
       this.eventHandlersMap = new Map <string, (event?: service.ICustomEvent<any>) => void> ([
@@ -260,14 +212,14 @@ export default defineComponent ({
      * Assign Embed Object from Report component to report
      * @param value
      */
-    setReportObj(value: Report) {
+    setReportObj(value: Report): void {
       this.report = value;
     },
 
     /**
      * Verify whether report is available or not
      */
-    reportAvailable() {
+    reportAvailable(): boolean {
       if (!this.report) {
         // Prepare status message for Error
         this.displayMessage = 'Report not available.';
@@ -275,7 +227,41 @@ export default defineComponent ({
         return false;
       }
       return true;
-    }
+    },
+
+    /**
+     * Toggle theme
+     *
+     * @returns Promise<void>
+     */
+    async toggleTheme(): Promise<void> {
+      // Check whether Report is available or not
+      if (!this.reportAvailable()) {
+        return;
+      }
+
+      try {
+        if (this.isThemeApplied) {
+          // Reset the Applied theme
+          await this.report.resetTheme();
+        }
+        else {
+          // Update the theme by passing in the custom theme.
+          // Some theme properties might not be applied if your report has custom colors set.
+          await this.report.applyTheme({ themeJson: sampleTheme });
+        }
+
+        this.isThemeApplied = !this.isThemeApplied;
+
+        this.displayMessage = this.isThemeApplied ? "Theme has been applied" : "Theme has been reset to default";
+        this.themeBtnText = this.isThemeApplied ? "Reset theme" : "Set theme";
+        console.log(this.displayMessage);
+      }
+      catch (error) {
+        this.displayMessage = `Failed to apply theme: ${JSON.stringify(error)}`;
+        console.log(this.displayMessage);
+      }
+    },
   },
 });
 </script>
@@ -288,7 +274,7 @@ export default defineComponent ({
 }
 
 .header {
-  background: #3476ae 0 0 no-repeat padding-box;
+  background: #117865 0 0 no-repeat padding-box;
   border: 1px solid #707070;
   color: #fff;
   font: 700 22px/27px 'Segoe UI';
@@ -303,14 +289,15 @@ export default defineComponent ({
 }
 
 button {
-  background: #337ab7;
+  background: #117865;
   border: 0;
   border-radius: 5px;
   color: #fff;
   font-size: 16px;
   height: 35px;
   margin-right: 15px;
-  width: 160px;
+  width: 185px;
+  cursor: pointer;
 }
 
 .display-message {
