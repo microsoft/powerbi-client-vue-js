@@ -9,6 +9,9 @@
         <button @click="toggleFilterPane()">{{ filterPaneBtnText }}</button>
         <button @click="toggleTheme()">{{ themeBtnText }}</button>
         <button @click="setDataSelectedEvent()">Set 'dataSelected' event</button>
+        <button @click="toggleZoom()">{{ zoomBtnText }}</button>
+        <button @click="refreshReport()">Refresh report</button>
+        <button @click="enableFullScreen()">Full screen</button>
         <label class="display-message">{{ displayMessage }}</label>
       </template>
       <template v-else>
@@ -55,6 +58,10 @@ const phasedEmbeddingFlag = false;
 // CSS Class to be passed to the wrapper
 const reportClass = 'report-container';
 
+// Constants for zoom levels
+const zoomOutLevel = 0.5;
+const zoomInLevel = 0.9;
+
 let report: Report;
 
 // Handles the embed config response for embedding
@@ -80,12 +87,14 @@ export default defineComponent ({
       displayMessage: 'The report is bootstrapped. Click the Embed Report button to set the access token.',
 
       // Flag for button toggles
-      isFilterPaneVisible: true,
+      isFilterPaneVisibleAndExpanded: true,
       isThemeApplied: false,
+      isZoomedOut: false,
 
       // Button text
       filterPaneBtnText: "Hide filter pane",
       themeBtnText: "Set theme",
+      zoomBtnText: "Zoom out",
 
       // Pass the basic embed configurations to the wrapper to bootstrap the report on first load
       // Values for properties like embedUrl, accessToken and settings will be set on click of button
@@ -164,21 +173,23 @@ export default defineComponent ({
       if(!this.reportAvailable()) {
         return;
       }
-      this.isFilterPaneVisible = !this.isFilterPaneVisible;
-      // New settings to hide filter pane
+
+      this.isFilterPaneVisibleAndExpanded = !this.isFilterPaneVisibleAndExpanded;
+
+      // New settings to show/hide the filter pane
       const settings = {
         panes: {
           filters: {
-            expanded: this.isFilterPaneVisible,
-            visible: this.isFilterPaneVisible,
+            expanded: this.isFilterPaneVisibleAndExpanded,
+            visible: this.isFilterPaneVisibleAndExpanded,
           },
         },
       };
 
       try {
         const response: IHttpPostMessageResponse<void> = await this.report.updateSettings(settings);
-        this.displayMessage = this.isFilterPaneVisible ? "Filter pane is visible" : "Filter pane is hidden";
-        this.filterPaneBtnText = this.isFilterPaneVisible ? "Hide filter pane" : "Show filter pane";
+        this.displayMessage = this.isFilterPaneVisibleAndExpanded ? "Filter pane is visible" : "Filter pane is hidden";
+        this.filterPaneBtnText = this.isFilterPaneVisibleAndExpanded ? "Hide filter pane" : "Show filter pane";
         console.log(this.displayMessage);
         return response;
       } catch (error) {
@@ -190,7 +201,7 @@ export default defineComponent ({
     /**
      * Set data selected event
      */
-    setDataSelectedEvent(): void {
+     setDataSelectedEvent(): void {
       this.eventHandlersMap = new Map <string, (event?: service.ICustomEvent<any>) => void> ([
         ...this.eventHandlersMap,
         ['dataSelected', (event) => console.log(event)],
@@ -262,6 +273,61 @@ export default defineComponent ({
         console.log(this.displayMessage);
       }
     },
+
+    /**
+     * Toggle zoom
+     *
+     * @returns Promise<void>
+    */
+    async toggleZoom(): Promise<void> {
+      // Check whether Report is available or not
+      if (!this.reportAvailable()) {
+        return;
+      }
+
+      try {
+        const newZoomLevel = this.isZoomedOut ? zoomInLevel : zoomOutLevel;
+        await this.report.setZoom(newZoomLevel);
+        this.isZoomedOut = !this.isZoomedOut;
+        this.zoomBtnText = this.isZoomedOut ? "Zoom in" : "Zoom out";
+      }
+      catch (errors) {
+        console.log(errors);
+      }
+    },
+
+    /**
+     * Refresh report event
+     *
+     * @returns Promise<void>
+    */
+    async refreshReport(): Promise<void> {
+      // Check whether Report is available or not
+      if (!this.reportAvailable()) {
+        return;
+      }
+
+      try {
+        await this.report.refresh();
+        this.displayMessage = 'The report has been refreshed successfully.';
+      }
+      catch (error: any) {
+        this.displayMessage = error.detailedMessage;
+        console.log(error);
+      }
+    },
+
+    /**
+     * Full screen event
+    */
+    enableFullScreen(): void {
+      // Check whether Report is available or not
+      if (!this.reportAvailable()) {
+        return;
+      }
+
+      this.report.fullscreen();
+    },
   },
 });
 </script>
@@ -290,14 +356,18 @@ export default defineComponent ({
 
 button {
   background: #117865;
-  border: 0;
+  border: none;
   border-radius: 5px;
   color: #fff;
-  font-size: 16px;
   height: 35px;
   margin-right: 15px;
-  width: 185px;
   cursor: pointer;
+  font-size: 1em;
+  width: 14vw;
+  max-width: 184px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .display-message {
