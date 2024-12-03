@@ -6,12 +6,14 @@
     <div class="header">Power BI Embedded Vue JS Component Demo</div>
     <div class="controls">
       <template v-if="isEmbedded">
-        <button @click="toggleFilterPane()">{{ filterPaneBtnText }}</button>
-        <button @click="toggleTheme()">{{ themeBtnText }}</button>
-        <button @click="setDataSelectedEvent()">Set 'dataSelected' event</button>
-        <button @click="toggleZoom()">{{ zoomBtnText }}</button>
-        <button @click="refreshReport()">Refresh report</button>
-        <button @click="enableFullScreen()">Full screen</button>
+        <div class="button-container">
+          <button @click="toggleFilterPane()">{{ filterPaneBtnText }}</button>
+          <button @click="toggleTheme()">{{ themeBtnText }}</button>
+          <button @click="setDataSelectedEvent()">{{ dataSelectedBtnText }}</button>
+          <button @click="toggleZoom()">{{ zoomBtnText }}</button>
+          <button @click="refreshReport()">Refresh report</button>
+          <button @click="enableFullScreen()">Full screen</button>
+        </div>
         <label class="display-message">{{ displayMessage }}</label>
       </template>
       <template v-else>
@@ -20,6 +22,7 @@
       </template>
 
       <EmbedConfigDialog :isEmbedConfigDialogVisible="isEmbedConfigDialogVisible" @embedConfigEvent="embedReport" @update:isEmbedConfigDialogVisible="isEmbedConfigDialogVisible = $event" />
+      <EventDetailsDialog :isEventDetailsDialogVisible="isEventDetailsDialogVisible" :dataSelectedEventDetails="dataSelectedEventDetails" @update:isEventDetailsDialogVisible="isEventDetailsDialogVisible = $event"/>
 
       <PowerBIReportEmbed v-if="isEmbedded"
         :embed-config="sampleReportConfig"
@@ -51,6 +54,7 @@ import 'powerbi-report-authoring';
 import { PowerBIReportEmbed } from 'powerbi-client-vue-js';
 import { sampleTheme } from './constants/constants';
 import EmbedConfigDialog from './components/EmbedConfigDialog.vue';
+import EventDetailsDialog from './components/EventDetailsDialog.vue';
 
 // Flag which specifies whether to use phase embedding or not
 const phasedEmbeddingFlag = false;
@@ -76,6 +80,7 @@ export default defineComponent ({
   components: {
     PowerBIReportEmbed,
     EmbedConfigDialog,
+    EventDetailsDialog
   },
 
   data() {
@@ -90,11 +95,13 @@ export default defineComponent ({
       isFilterPaneVisibleAndExpanded: true,
       isThemeApplied: false,
       isZoomedOut: false,
+      isDataSelectedEvent: false,
 
       // Button text
       filterPaneBtnText: "Hide filter pane",
       themeBtnText: "Set theme",
       zoomBtnText: "Zoom out",
+      dataSelectedBtnText: "Show dataSelected event in dialog",
 
       // Pass the basic embed configurations to the wrapper to bootstrap the report on first load
       // Values for properties like embedUrl, accessToken and settings will be set on click of button
@@ -134,7 +141,11 @@ export default defineComponent ({
       report,
       reportClass,
       phasedEmbeddingFlag,
-      isEmbedConfigDialogVisible: false
+      isEmbedConfigDialogVisible: false,
+
+      // Flag to display the data selected event details dialog
+      isEventDetailsDialogVisible: false,
+      dataSelectedEventDetails: undefined
     };
   },
 
@@ -169,7 +180,6 @@ export default defineComponent ({
      * @returns Promise<IHttpPostMessageResponse<void> | undefined>
      */
     async toggleFilterPane(): Promise<IHttpPostMessageResponse<void> | undefined> {
-      // Check whether Report is available or not
       if(!this.reportAvailable()) {
         return;
       }
@@ -201,17 +211,38 @@ export default defineComponent ({
     /**
      * Set data selected event
      */
-     setDataSelectedEvent(): void {
-      this.eventHandlersMap = new Map <string, (event?: service.ICustomEvent<any>) => void> ([
-        ...this.eventHandlersMap,
-        ['dataSelected', (event) => console.log(event)],
-      ]);
+    setDataSelectedEvent(): void {
+      this.isDataSelectedEvent = !this.isDataSelectedEvent;
 
-      this.displayMessage = 'Data Selected event set successfully. Select data to see event in console.';
+      if(this.isDataSelectedEvent) {
+        this.eventHandlersMap = new Map <string, (event?: service.ICustomEvent<any>) => void> ([
+          ...this.eventHandlersMap,
+          ['dataSelected', (event) => {
+            event?.detail.dataPoints.length && this.dataSelectedEventDetailsDialog(event.detail);
+          }],
+        ]);
+
+        this.displayMessage = "Data Selected event has been successfully set. Click on a data point to see the details.";
+        this.dataSelectedBtnText = "Hide dataSelected event in dialog";
+      }
+      else {
+        this.eventHandlersMap.delete('dataSelected');
+        this.report?.off('dataSelected');
+        this.displayMessage = "Data Selected event has been successfully unset.";
+        this.dataSelectedBtnText = "Show dataSelected event in dialog";
+      }
+    },
+
+    dataSelectedEventDetailsDialog(dataSelectedEventDetails: any): void {
+      this.dataSelectedEventDetails = dataSelectedEventDetails;
+      this.isEventDetailsDialogVisible = true;
+    },
+
+    closeDataSelectedEventDetailsDialog(): void {
+      this.isEventDetailsDialogVisible = false;
     },
 
     setTitle(): void {
-      // Check whether Report is available or not
       if (!this.reportAvailable()) {
         return;
       }
@@ -246,19 +277,17 @@ export default defineComponent ({
      * @returns Promise<void>
      */
     async toggleTheme(): Promise<void> {
-      // Check whether Report is available or not
       if (!this.reportAvailable()) {
         return;
       }
 
+      // Update the theme by passing in the custom theme.
+      // Some theme properties might not be applied if your report has custom colors set.
       try {
         if (this.isThemeApplied) {
-          // Reset the Applied theme
           await this.report.resetTheme();
         }
         else {
-          // Update the theme by passing in the custom theme.
-          // Some theme properties might not be applied if your report has custom colors set.
           await this.report.applyTheme({ themeJson: sampleTheme });
         }
 
@@ -269,8 +298,8 @@ export default defineComponent ({
         console.log(this.displayMessage);
       }
       catch (error) {
-        this.displayMessage = `Failed to apply theme: ${JSON.stringify(error)}`;
-        console.log(this.displayMessage);
+        this.displayMessage = "Failed to apply theme.";
+        console.log(error);
       }
     },
 
@@ -280,7 +309,6 @@ export default defineComponent ({
      * @returns Promise<void>
     */
     async toggleZoom(): Promise<void> {
-      // Check whether Report is available or not
       if (!this.reportAvailable()) {
         return;
       }
@@ -302,7 +330,6 @@ export default defineComponent ({
      * @returns Promise<void>
     */
     async refreshReport(): Promise<void> {
-      // Check whether Report is available or not
       if (!this.reportAvailable()) {
         return;
       }
@@ -321,7 +348,6 @@ export default defineComponent ({
      * Full screen event
     */
     enableFullScreen(): void {
-      // Check whether Report is available or not
       if (!this.reportAvailable()) {
         return;
       }
@@ -359,15 +385,22 @@ button {
   border: none;
   border-radius: 5px;
   color: #fff;
-  height: 35px;
-  margin-right: 15px;
   cursor: pointer;
   font-size: 1em;
-  width: 14vw;
-  max-width: 184px;
-  white-space: nowrap;
+  height: 35px;
+  margin-bottom: 8px;
+  margin-right: 15px;
+  min-width: 270px;
   overflow: hidden;
   text-overflow: ellipsis;
+  white-space: nowrap;
+  width: calc((100% / 3) - 120px);
+}
+
+.button-container {
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 1120px;
 }
 
 .display-message {
@@ -376,7 +409,6 @@ button {
   font: 400 18px/27px 'Segoe UI';
   height: 30px;
   justify-content: center;
-  margin-top: 8px;
   text-align: center;
 }
 
@@ -385,9 +417,10 @@ button {
 }
 
 .embed-report {
+  margin-right: 0;
   margin-top: 18px;
   text-align: center;
-  margin-right: 0;
+  width: 184px;
 }
 
 .footer {
@@ -428,5 +461,26 @@ iframe {
   height: 75vh;
   margin: 8px auto;
   width: 90%;
+}
+
+@media screen and (max-width: 980px) {
+  p {
+      font-size: 12px;
+  }
+}
+
+@media screen and (max-width: 767px) {
+  p {
+      font-size: 10px;
+  }
+
+  .display-message {
+    font: 400 14px 'Segoe UI';
+  }
+
+  .footer {
+    font: 400 8px 'Segoe UI';
+    height: 64px;
+  }
 }
 </style>

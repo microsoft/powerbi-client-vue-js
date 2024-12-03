@@ -79,8 +79,8 @@ export default {
 
 <style>
 p {
+    margin: 10px 0;
     text-align: start;
-    margin: 10px 0
 }
 
 span {
@@ -100,30 +100,31 @@ span {
 .close-icon-button {
     background: none;
     border: none;
-    font-size: 24px;
     color: #000000;
-    height: 52px;
-    margin-right: 20px;
-    width: 0px;
     cursor: pointer;
+    font-size: 24px;
+    height: 52px;
+    margin-right: 0px;
+    min-width: unset;
     padding: 0;
+    width: 20px;
 }
 
 .dialog-main {
+    align-items: flex-start;
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
 }
 
 .dialog-field {
-    width: 100%;
     margin: 5px 0;
+    width: 100%;
 }
 
 .dialog-buttons {
     display: flex;
-    margin: 15px 0;
     justify-content: flex-end;
+    margin: 15px 0;
 }
 
 .dialog-buttons .run-button.active::part(control) {
@@ -141,23 +142,22 @@ span {
 }
 
 fluent-button {
-    width: 88px;
-    height: 35px;
     border-radius: 5px;
     font-size: 16px;
     font-weight: 500;
+    height: 35px;
+    width: 88px;
 }
 
 fluent-dialog::part(control) {
-    width: auto;
     height: auto;
     padding: 24px;
 }
 
 fluent-text-field::part(root) {
-    height: 32px;
     border: 1px solid #8A8886;
     border-radius: 2px;
     font-size: 16px;
+    height: 32px;
 }
 </style>
