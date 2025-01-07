@@ -1,6 +1,6 @@
 {
   "name": "powerbi-client-vue-js",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "VueJS wrapper for powerbi-client library",
   "files": [ "dist" ],
   "main": "./dist/powerbi-client-vue-js.es.js",
@@ -26,6 +26,9 @@
     "url": "https://github.com/microsoft/powerbi-client-vue-js"
   },
   "license": "MIT",
+  "publishConfig": {
+		"tag": "beta"
+	},
   "dependencies": {
     "powerbi-client": "^2.23.1",
     "powerbi-report-authoring": "^1.1.3",
