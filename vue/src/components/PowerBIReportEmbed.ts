@@ -81,6 +81,7 @@ export default defineComponent({
      */
     embedOrBootstrap(): void {
       // Decide to embed, load or bootstrap
+      this.powerbi.reset(this.$refs.containerRef as HTMLElement);
       if (this.config?.accessToken && this.config?.embedUrl) {
         this.embedReport();
       } else {

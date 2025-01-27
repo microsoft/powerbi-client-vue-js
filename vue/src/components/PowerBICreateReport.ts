@@ -77,7 +77,7 @@ export default defineComponent({
         console.error("HTML container is not rendered or available");
         return;
       }
-
+      this.powerbi.reset(this.$refs.containerRef as HTMLElement);
       this.embed = this.powerbi.createReport(this.$refs.containerRef as HTMLElement, this.config);
     },
 
